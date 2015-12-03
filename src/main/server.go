@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/divideandconquer/go-base/src/test"
@@ -39,5 +38,5 @@ func main() {
 	})
 
 	// Start up the server
-	log.Fatal(m.RunOnAddr(":8080"))
+	m.RunOnAddr(":8080")
 }
