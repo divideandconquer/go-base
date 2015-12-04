@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 
-	"github.com/divideandconquer/go-base/src/test"
+	"github.com/divideandconquer/go-base/src/v1/test"
 	"github.com/divideandconquer/negotiator"
 	"github.com/go-martini/martini"
 )
