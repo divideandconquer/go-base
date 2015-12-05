@@ -1,8 +1,11 @@
 package test
 
 import (
+	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"reflect"
 	"strings"
 	"testing"
@@ -42,10 +45,23 @@ func (t *TestInjector) SetParams(p martini.Params) {
 	t.Injector.Map(p)
 }
 
+// SetQueryParams will set URL Query parameters on the request
+func (t *TestInjector) SetQueryParams(params map[string]string) {
+	q := t.r.URL.Query()
+	for k, v := range params {
+		q.Add(k, v)
+	}
+	t.r.URL.RawQuery = q.Encode()
+}
+
 // SetHeaders sets the headers on the internal request
 func (t *TestInjector) SetHeaders(h http.Header) {
 	t.r.Header = h
 }
+
+//////////////////
+// TEST HELPERS
+//////////////////
 
 func injectAndInvoke(t *testing.T, handler martini.Handler, ti *TestInjector) (int, []byte) {
 	val, err := ti.Invoke(handler)
@@ -77,5 +93,48 @@ func InvokeAndCheck(t *testing.T, handler martini.Handler, ti *TestInjector, exp
 
 	if !reflect.DeepEqual(body, expectedBody) {
 		t.Fatalf("Unexpected body returned %s instead of %s", body, expectedBody)
+	}
+}
+
+// DoTestRequest will execute a request againt the service specified in the hostname env var
+func DoTestRequest(t *testing.T, method string, slug string, body string, header http.Header) (*http.Response, error) {
+	host := os.Getenv("hostname")
+	if host == "" {
+		t.Skipf("skipping request to %s.  hostname env var not set.", slug)
+	}
+	URL := fmt.Sprintf("http://%s/v1/%s", host, slug)
+
+	r, err := http.NewRequest(method, URL, strings.NewReader(body))
+	if err != nil {
+		t.Fatalf("Could not create request to %s", URL)
+	}
+
+	if header != nil {
+		r.Header = header
+	}
+
+	return http.DefaultClient.Do(r)
+}
+
+func VerifyResponse(t *testing.T, res *http.Response, err error, expectedStatus int, expectedBody []byte) {
+	defer res.Body.Close()
+	if err != nil {
+		t.Fatalf("Error was not nil: %v", err)
+	}
+
+	if res == nil {
+		t.Fatal("res was nil")
+	}
+
+	if res.StatusCode != expectedStatus {
+		t.Fatalf("Status code (%d) did not match expected (%d)", res.StatusCode, expectedStatus)
+	}
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		t.Fatalf("Error reading body: %v", err)
+	}
+	if !reflect.DeepEqual(body, expectedBody) {
+		t.Fatalf("Body ( %s ) did not match expected ( %s )", body, expectedBody)
 	}
 }

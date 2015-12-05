@@ -15,23 +15,20 @@ func main() {
 	m.Use(martini.Logger())
 
 	// Setup routes
-	r := martini.NewRouter()
-
-	r.Group("/v1", func(v1router martini.Router) {
-
+	router := martini.NewRouter()
+	router.Group("/v1", func(v1router martini.Router) {
 		//Setup v1 routes
-
-		v1router.Group("/test", func(v1router martini.Router) {
+		v1router.Group("/test", func(r martini.Router) {
 			r.Get("/ping", test.Ping())
 		})
 	})
 
 	// Add the router action
-	m.Action(r.Handle)
+	m.Action(router.Handle)
 
 	// Inject dependencies
 	m.Use(func(c martini.Context, w http.ResponseWriter) {
-		enc := negotiator.JsonEncoder{true}
+		enc := negotiator.JsonEncoder{false}
 		cn := negotiator.NewContentNegotiator(enc, w)
 		cn.AddEncoder(negotiator.MimeJSON, enc)
 		c.MapTo(cn, (*negotiator.Negotiator)(nil))
