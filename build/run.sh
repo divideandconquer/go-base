@@ -12,7 +12,7 @@ CurrentDir=`pwd`
 ServicePath="${CurrentDir/$BasePath/}"
 
 # run the build
-docker run -it -v `pwd`:"/go/src/$ServicePath" divideandconquer/godep:1.5.1 /bin/bash -c "cd /go/src/$ServicePath; ./build/build.sh"
+docker run -it -v `pwd`:"/go/src/$ServicePath" divideandconquer/godep:1.5.1 /bin/bash -c "cd /go/src/$ServicePath; ./build/build.sh" || { echo 'build failed' ; exit 1; }
 
 # build the docker container with the new binary
 docker build -t $ServiceName .
