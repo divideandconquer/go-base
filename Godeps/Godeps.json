@@ -12,7 +12,7 @@
 		},
 		{
 			"ImportPath": "github.com/divideandconquer/go-consul-client/src/client",
-			"Rev": "beb08ee08859bd7aaf895be4d0b13612d7bbae49"
+			"Rev": "1c51aa6abdfe4f01ff3ec88419f4a2c6aabd0c09"
 		},
 		{
 			"ImportPath": "github.com/divideandconquer/go-merge/merge",
