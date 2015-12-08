@@ -19,6 +19,9 @@ func main() {
 
 	conf := setupConfig(serviceName, environment, consulAddress)
 
+	//pull config and pass it around
+	conf.MustGetString("config_key")
+
 	//setup martini
 	m := martini.New()
 	// Setup middleware
@@ -51,6 +54,7 @@ func main() {
 
 func setupConfig(service string, env string, consulAddr string) client.Loader {
 	appNamespace := fmt.Sprintf("%s/%s", env, service)
+	log.Printf("Initializing config for %s with consul %s", appNamespace, consulAddr)
 
 	// create a cached loader
 	conf, err := client.NewCachedLoader(appNamespace, consulAddr)
@@ -63,6 +67,8 @@ func setupConfig(service string, env string, consulAddr string) client.Loader {
 	if err != nil {
 		log.Fatalf("Could not initialize the config cached loader: %v", err)
 	}
+
+	return conf
 }
 
 func mustGetEnvVar(key string) string {
