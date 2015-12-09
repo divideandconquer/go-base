@@ -12,7 +12,7 @@ CurrentDir=`pwd`
 ServicePath="${CurrentDir/$BasePath/}"
 
 # run the build
-docker run -it -v `pwd`:"/go/src/$ServicePath" divideandconquer/godep:1.5.1 /bin/bash -c "cd /go/src/$ServicePath; ./build/build.sh" || { echo 'build failed' ; exit 1; }
+docker run -it -v `pwd`:"/go/src/$ServicePath" -w /go/src/$ServicePath divideandconquer/godep:1.5.1 ./build/build.sh || { echo 'build failed' ; exit 1; }
 
 # update the config 
 ConsulAddr=`ifconfig eth1 | grep "inet " | sed -e 's/^[[:space:]]*//' | cut -d" " -f2`
