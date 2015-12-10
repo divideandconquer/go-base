@@ -11,8 +11,12 @@
 			"Rev": "33e0aa1cb7c019ccc3fbe049a8262a6403d30504"
 		},
 		{
+			"ImportPath": "github.com/divideandconquer/go-consul-client/src/balancer",
+			"Rev": "0750e3b525eabd06580b7be2135c49baceb94302"
+		},
+		{
 			"ImportPath": "github.com/divideandconquer/go-consul-client/src/client",
-			"Rev": "1c51aa6abdfe4f01ff3ec88419f4a2c6aabd0c09"
+			"Rev": "0750e3b525eabd06580b7be2135c49baceb94302"
 		},
 		{
 			"ImportPath": "github.com/divideandconquer/go-merge/merge",
