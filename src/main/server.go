@@ -7,9 +7,15 @@ import (
 	"os"
 
 	"github.com/divideandconquer/go-base/src/v1/test"
+	"github.com/divideandconquer/go-consul-client/src/balancer"
 	"github.com/divideandconquer/go-consul-client/src/client"
 	"github.com/divideandconquer/negotiator"
 	"github.com/go-martini/martini"
+)
+
+// config keys
+const (
+	configKeyBalancerTTL = "balancerTTL"
 )
 
 func main() {
@@ -17,10 +23,14 @@ func main() {
 	environment := mustGetEnvVar("ENVIRONMENT")
 	serviceName := mustGetEnvVar("SERVICE_NAME")
 
-	conf := setupConfig(serviceName, environment, consulAddress)
-
+	conf, _ := setupConfig(serviceName, environment, consulAddress)
 	//pull config and pass it around
-	conf.MustGetString("config_key")
+	conf.MustGetDuration(configKeyBalancerTTL)
+
+	// use loadbalancer to lookup services and db locations if necessary
+	// Each request should repeat the lookup to make sure that this app
+	// follows any services that move
+	// s, err := loadbalancer.FindService("foo")
 
 	//setup martini
 	m := martini.New()
@@ -52,7 +62,7 @@ func main() {
 	m.RunOnAddr(":8080")
 }
 
-func setupConfig(service string, env string, consulAddr string) client.Loader {
+func setupConfig(service string, env string, consulAddr string) (client.Loader, balancer.DNS) {
 	appNamespace := fmt.Sprintf("%s/%s", env, service)
 	log.Printf("Initializing config for %s with consul %s", appNamespace, consulAddr)
 
@@ -68,7 +78,12 @@ func setupConfig(service string, env string, consulAddr string) client.Loader {
 		log.Fatalf("Could not initialize the config cached loader: %v", err)
 	}
 
-	return conf
+	loadbalancer, err := balancer.NewRandomDNSBalancer(env, consulAddr, conf.MustGetDuration(configKeyBalancerTTL))
+	if err != nil {
+		log.Fatalf("Could not create loadbalancer: %v", err)
+	}
+
+	return conf, loadbalancer
 }
 
 func mustGetEnvVar(key string) string {

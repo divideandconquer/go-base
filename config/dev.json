@@ -1,3 +1,3 @@
 {
-	"config_key":"config_value"
+	"balancerTTL":"5s"
 }
