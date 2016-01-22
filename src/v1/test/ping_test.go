@@ -7,11 +7,11 @@ import (
 
 func TestUnit_Ping_BasePath(t *testing.T) {
 	handler := Ping()
-	ti := NewTestInjector("GET", "")
-	InvokeAndCheck(t, handler, ti, http.StatusOK, []byte(`{"message":"pong!"}`))
+	i := NewInjector("GET", "")
+	InvokeAndCheck(t, handler, i, http.StatusOK, []byte(`{"message":"pong!"}`))
 }
 
 func TestFunctional_Ping_BasePath(t *testing.T) {
 	res, err := DoTestRequest(t, "GET", "test/ping", "", nil)
-	VerifyResponse(t, res, err, http.StatusOK, []byte(`{"message":"pong!"}`))
+	VerifyResponseBody(t, res, err, http.StatusOK, []byte(`{"message":"pong!"}`))
 }
