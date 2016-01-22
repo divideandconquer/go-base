@@ -52,7 +52,7 @@ func main() {
 
 	// Inject dependencies
 	m.Use(func(c martini.Context, w http.ResponseWriter) {
-		enc := negotiator.JsonEncoder{false}
+		enc := negotiator.JsonEncoder{PrettyPrint: false}
 		cn := negotiator.NewContentNegotiator(enc, w)
 		cn.AddEncoder(negotiator.MimeJSON, enc)
 		c.MapTo(cn, (*negotiator.Negotiator)(nil))

@@ -11,6 +11,7 @@ type pong struct {
 	Message string `json:"message"`
 }
 
+// Ping returns a ping handler
 func Ping() martini.Handler {
 	return func(w http.ResponseWriter, r *http.Request, neg negotiator.Negotiator) (int, []byte) {
 		ret := pong{Message: "pong!"}
