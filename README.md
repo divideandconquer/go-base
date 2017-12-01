@@ -1,4 +1,7 @@
 # go-base
+
+**Note** this has been replaced with a revised version in the [healthimation](https://github.com/healthimation/go-base) organization.  The code in this repo is deprecated.
+
 A base service to start new services from
 
 ## Getting Started
